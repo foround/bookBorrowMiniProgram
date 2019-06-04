@@ -3,6 +3,7 @@ import Taro, { Component } from '@tarojs/taro'
 import '@tarojs/async-await';
 import { View } from '@tarojs/components'
 import { AtTabs,AtTabsPane,AtImagePicker,AtInput,AtTextarea,AtButton } from 'taro-ui'
+import {addBook} from '../../utils/db'
 import './index.styl'
 import { BOOK_SEARCH_URL } from '../../config';
 
@@ -19,13 +20,13 @@ export default class Index extends Component {
     super(...arguments)
     this.state = {
       current: 0,
-      isbnCode:'',
       bookInfo:{
         title: '',
         author: '',
         summary: '',
         images: [],
-        totalNum: 1
+        totalNum: 1,
+        ISBN:'',
       }
     }
   }
@@ -41,7 +42,7 @@ export default class Index extends Component {
                 name='isbnCode'
                 type='text'
                 placeholder='请输入图书的ISBN码(不需要横线)'
-                value={this.state.isbnCode}
+                value={this.state.bookInfo.ISBN}
               />
             </View>
             <View className='isbn-submit'>
@@ -91,7 +92,7 @@ export default class Index extends Component {
                 type='primary'
                 className='submit-button'
                 circle
-                formType='submit'
+                onClick={this.submitAddBook.bind(this)}
               >
                 提交
               </AtButton>
@@ -123,9 +124,12 @@ export default class Index extends Component {
     Taro.scanCode({
       scanType: 'barCode',
       success (res) {
-        $this.setState({
-          isbnCode: res.result
-        })
+        let bookInfo = {
+          ...$this.state.bookInfo,
+          ISBN: res.result
+        }
+        console.log(bookInfo)
+        $this.setState({bookInfo})
       },fail(){
         Taro.showToast({
           title: '扫描图书条形码失败，请重试',
@@ -183,7 +187,7 @@ export default class Index extends Component {
     }
   }
   async getBookInfo(){
-    if(/^(\d{10}|\d{13})$/.test(this.state.isbnCode) == false){
+    if(/^(\d{10}|\d{13})$/.test(this.state.bookInfo.ISBN) == false){
       Taro.showToast({
         title: '图书ISBN信息输入有误',
         icon: 'none'
@@ -197,6 +201,7 @@ export default class Index extends Component {
       }
       let {title,author,summary,image} = res.data.data;
       let bookInfo = {
+        ...this.state.bookInfo,
         title,
         author:author.join(','),
         summary,
@@ -211,5 +216,10 @@ export default class Index extends Component {
         icon: 'none'
       })
     }
+  }
+  //保存图书信息到数据库
+  submitAddBook(){
+    console.log(this.state.bookInfo)
+    addBook({...this.state.bookInfo,category:1})
   }
 }
