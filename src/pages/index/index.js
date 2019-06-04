@@ -24,7 +24,8 @@ export default class Index extends Component {
         title: '',
         author: '',
         summary: '',
-        images: []
+        images: [],
+        totalNum: 1
       }
     }
   }
@@ -66,6 +67,13 @@ export default class Index extends Component {
               type='text'
               placeholder='请输入作者'
               value={this.state.bookInfo.author}
+            />
+            <AtInput
+              name='author'
+              title='数量'
+              type='number'
+              placeholder='请输入该书总数量'
+              value={this.state.bookInfo.totalNum}
             />
             <AtTextarea
               className='at-text-area'
@@ -192,7 +200,8 @@ export default class Index extends Component {
         title,
         author:author.join(','),
         summary,
-        images: [{url:image}]
+        images: [{url:image}],
+        totalNum: 1
       }
       this.setState({bookInfo:bookInfo,current:1})
     }catch(e){
