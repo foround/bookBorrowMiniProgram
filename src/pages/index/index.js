@@ -43,6 +43,7 @@ export default class Index extends Component {
                 type='text'
                 placeholder='请输入图书的ISBN码(不需要横线)'
                 value={this.state.bookInfo.ISBN}
+                onChange={this.onISBNInputChange.bind(this)}
               />
             </View>
             <View className='isbn-submit'>
@@ -70,11 +71,18 @@ export default class Index extends Component {
               value={this.state.bookInfo.author}
             />
             <AtInput
-              name='author'
+              name='number'
               title='数量'
               type='number'
               placeholder='请输入该书总数量'
               value={this.state.bookInfo.totalNum}
+            />
+            <AtInput
+              name='ISBN'
+              title='ISBN码'
+              type='text'
+              placeholder='请输入该书的ISBN码'
+              value={this.state.bookInfo.ISBN}
             />
             <AtTextarea
               className='at-text-area'
@@ -138,6 +146,13 @@ export default class Index extends Component {
       }
     })
   }
+  onISBNInputChange(isbnValue){
+    let bookInfo = {
+      ...this.state.bookInfo,
+      ISBN: isbnValue
+    }
+    this.setState({bookInfo})
+  }
   bindPickerChange(newList,handle){
     let $this = this
     switch(handle){
@@ -195,7 +210,7 @@ export default class Index extends Component {
       return;
     }
     try{
-      let res = await fly.get(BOOK_SEARCH_URL)
+      let res = await fly.get(BOOK_SEARCH_URL(this.state.bookInfo.ISBN))
       if(res.data.errorCode != 0){
         throw new Error('Error')
       }
