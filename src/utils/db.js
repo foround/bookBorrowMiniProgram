@@ -19,3 +19,18 @@ export function addBook(bookInfo){
         }
     })
 }
+ export function queryByISBN(ISBN){
+    return new Promise((resolve,reject) =>{
+        Taro.cloud.callFunction({
+            name: 'queryByISBN',
+            data:{ISBN},
+            success({result}){
+                resolve(result.data)
+            },
+            fail(err){
+                reject(err)
+            }
+        })
+    })
+    
+ }

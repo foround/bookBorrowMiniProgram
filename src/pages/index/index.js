@@ -3,7 +3,7 @@ import Taro, { Component } from '@tarojs/taro'
 import '@tarojs/async-await';
 import { View } from '@tarojs/components'
 import { AtTabs,AtTabsPane,AtImagePicker,AtInput,AtTextarea,AtButton } from 'taro-ui'
-import {addBook} from '../../utils/db'
+import {addBook,queryByISBN} from '../../utils/db'
 import './index.styl'
 import { BOOK_SEARCH_URL } from '../../config';
 
@@ -62,6 +62,7 @@ export default class Index extends Component {
               type='text'
               placeholder='请输入书名'
               value={this.state.bookInfo.title}
+              onChange={this.changeBookInfo.bind(this,"title")}
             />
             <AtInput
               name='author'
@@ -69,6 +70,7 @@ export default class Index extends Component {
               type='text'
               placeholder='请输入作者'
               value={this.state.bookInfo.author}
+              onChange={this.changeBookInfo.bind(this,"author")}
             />
             <AtInput
               name='number'
@@ -76,6 +78,7 @@ export default class Index extends Component {
               type='number'
               placeholder='请输入该书总数量'
               value={this.state.bookInfo.totalNum}
+              onChange={this.changeBookInfo.bind(this,"totalNum")}
             />
             <AtInput
               name='ISBN'
@@ -83,6 +86,7 @@ export default class Index extends Component {
               type='text'
               placeholder='请输入该书的ISBN码'
               value={this.state.bookInfo.ISBN}
+              onChange={this.changeBookInfo.bind(this,"ISBN")}
             />
             <AtTextarea
               className='at-text-area'
@@ -90,6 +94,7 @@ export default class Index extends Component {
               maxLength={300}
               height={200}
               placeholder='请输入书籍简介'
+              onChange={this.changeBookInfo.bind(this,"summary")}
             />
             <AtImagePicker
               files={this.state.bookInfo.images}
@@ -110,7 +115,9 @@ export default class Index extends Component {
     )
   }
 
-  componentWillMount () {
+  async componentWillMount () {
+    let res = await queryByISBN('9787505429161');
+    console.log(res)
   }
 
   componentDidMount () { }
@@ -120,8 +127,9 @@ export default class Index extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
-  toggleTab (value) {
 
+  //切换上方卡片
+  toggleTab (value) {
     this.setState({
       current: value
     })
@@ -201,6 +209,12 @@ export default class Index extends Component {
         break;
     }
   }
+  //表单内容修改
+  changeBookInfo(key,value){
+    let {bookInfo} = this.state;
+    bookInfo[key] = value;
+    this.setState({bookInfo})
+  }
   async getBookInfo(){
     if(/^(\d{10}|\d{13})$/.test(this.state.bookInfo.ISBN) == false){
       Taro.showToast({
@@ -233,8 +247,24 @@ export default class Index extends Component {
     }
   }
   //保存图书信息到数据库
-  submitAddBook(){
-    console.log(this.state.bookInfo)
-    addBook({...this.state.bookInfo,category:1})
+  async submitAddBook(){
+    try{
+      let {bookInfo} = this.state;
+      for(let item of Object.values(bookInfo)){
+        if(String(item).length === 0){
+          throw new Error('有未填的表单项,请完善信息')
+        }
+      }
+      let queryBook = await queryByISBN(this.state.bookInfo.ISBN);
+      if(queryBook.length > 0){
+        throw new Error('图书信息已存在，请重新录入')
+      }
+        addBook({...this.state.bookInfo,category:1})
+    }catch({message}){
+      Taro.showToast({
+        title: message,
+        icon: 'none'
+      })
+    }
   }
 }
