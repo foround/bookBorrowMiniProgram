@@ -34,3 +34,17 @@ export function addBook(bookInfo){
     })
     
  }
+
+ export function fetchBookList(){
+     return new Promise((resolve,reject) =>{
+         Taro.cloud.callFunction({
+             name: 'bookList',
+             success({result}){
+                resolve(result.data)
+            },
+            fail(err){
+                reject(err)
+            }
+         })
+     })
+ }
