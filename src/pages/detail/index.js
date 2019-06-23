@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import Taro ,{ Component } from '@tarojs/taro';
-import { AtDivider,AtButton } from 'taro-ui'
+import { AtDivider } from 'taro-ui'
 import dayjs from 'dayjs'
 import { View,} from '@tarojs/components';
 import {queryById} from '../../utils/db'
@@ -48,7 +48,7 @@ export default class Index extends Component {
   }
   componentDidMount () {} 
   render() {
-    let { ISBN, author, category, createTime, imageUrl, summary, title, totalNum, _id } = this;
+    let { author, category, createTime, imageUrl, summary, title, totalNum, _id } = this;
     let entryTime = dayjs(createTime).format('YYYY-MM-DD');
     return (
       <View>
@@ -70,7 +70,8 @@ export default class Index extends Component {
               书籍类型：{category === UTIL_BOOK? '工具书': '普通书'}
             </View>
             <View className='at-article__info'>
-              书籍总数: {totalNum}本(已借阅0本)
+              书籍总数: {totalNum}本
+              {category !== UTIL_BOOK? '(已借阅0本)': ''}
             </View>
           </View>
         </View>

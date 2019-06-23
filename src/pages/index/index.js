@@ -2,7 +2,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import '@tarojs/async-await';
 import { View } from '@tarojs/components'
-import { AtTabs,AtTabsPane,AtImagePicker,AtInput,AtTextarea,AtButton } from 'taro-ui'
+import { AtTabs,AtTabsPane,AtImagePicker,AtInput,AtTextarea,AtButton,AtSwitch } from 'taro-ui'
 import {addBook,queryByISBN} from '../../utils/db'
 import './index.styl'
 import { BOOK_SEARCH_URL } from '../../config';
@@ -87,6 +87,11 @@ export default class Index extends Component {
               placeholder='请输入该书的ISBN码'
               value={this.state.bookInfo.ISBN}
               onChange={this.changeBookInfo.bind(this,"ISBN")}
+            />
+            <AtSwitch
+              title='是否是工具书'
+              checked={this.state.bookInfo.category}
+              onChange={this.changeBookInfo.bind(this,"category")}
             />
             <AtTextarea
               className='at-text-area'
@@ -211,6 +216,7 @@ export default class Index extends Component {
   }
   //表单内容修改
   changeBookInfo(key,value){
+    console.log(key,value)
     let {bookInfo} = this.state;
     bookInfo[key] = value;
     this.setState({bookInfo})
@@ -259,7 +265,7 @@ export default class Index extends Component {
       if(queryBook.length > 0){
         throw new Error('图书信息已存在，请重新录入')
       }
-        addBook({...this.state.bookInfo,category:1})
+        addBook({...bookInfo,category:bookInfo.category === true? 0: 1})
     }catch({message}){
       Taro.showToast({
         title: message,
