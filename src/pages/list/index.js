@@ -1,6 +1,6 @@
 import Taro , { Component } from '@tarojs/taro';
-import { View } from '@tarojs/components';
-import { AtList, AtListItem } from "taro-ui"
+import { View,Text } from '@tarojs/components';
+import { AtList, AtListItem, AtFab } from "taro-ui"
 import {fetchBookList} from '../../utils/db'
 import HeaderBanner from '../../component/HeaderBanner'
 
@@ -31,12 +31,22 @@ export default class Index extends Component {
         onClick={this.naviToDetail.bind(this,_id)}
       />
     })
+    let FabContainer = {
+      position: 'fixed',
+      right: '50px',
+      bottom: '50px'
+    }
     return (
       <View>
         <HeaderBanner onChange={this.onChange}></HeaderBanner>
         <AtList>
           {bookItems}
         </AtList>
+        <View style={FabContainer}>
+          <AtFab size='small' onClick={this.naviToAdd.bind(this)}>
+            <Text className='at-fab__icon at-icon at-icon-add'></Text>
+          </AtFab>
+        </View>
       </View>
     );
   }
@@ -46,6 +56,11 @@ export default class Index extends Component {
   naviToDetail(id){
     Taro.navigateTo({
       url: `/pages/detail/index?id=${id}`,
+    })
+  }
+  naviToAdd(){
+    Taro.navigateTo({
+      url: `/pages/index/index`,
     })
   }
 }
