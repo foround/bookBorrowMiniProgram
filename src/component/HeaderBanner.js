@@ -1,10 +1,12 @@
 import Taro , { Component } from '@tarojs/taro';
 import { View, Picker } from '@tarojs/components'
-import {icon} from '@fortawesome/fontawesome'
+import { func } from 'prop-types';
 
-console.log(icon)
 export default class extends Component {
 
+    static props = {
+        onChange: func
+    }
     config = {
         navigationBarTitleText: ''
     }
@@ -15,7 +17,6 @@ export default class extends Component {
         category: '全部',
         isAsc: true
     }
-
     componentWillMount () {}
     componentDidMount () {} 
     render() {
@@ -34,7 +35,7 @@ export default class extends Component {
         }
         return (
             <View style={containerClass}>
-                <Picker mode='selector' style={pickerClass} range={this.state.selector} onChange={this.onChange}>
+                <Picker mode='selector' style={pickerClass} range={this.state.selector} onChange={this.onChangeCategory}>
                     <View className='picker'>{this.category}</View>
                 </Picker>
                 <View style={pickerClass} onClick={this.toggleOrder}>
@@ -43,13 +44,21 @@ export default class extends Component {
             </View>
         );
     }
-    onChange(e){
+    onChangeCategory(e){
         let index = e.detail.value
         // eslint-disable-next-line react/no-unused-state
         this.setState({category: this.state.selector[index]})
+        this.props.onChange({
+            category: this.state.selector[index],
+            isAsc: this.state.isAsc
+        })
     }
     toggleOrder(){
         let isAsc = ! this.state.isAsc
         this.setState({isAsc})
+        this.props.onChange({
+            category: this.state.category,
+            isAsc: isAsc
+        })
     }
 }

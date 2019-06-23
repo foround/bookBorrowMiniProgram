@@ -21,7 +21,6 @@ export default class Index extends Component {
   componentDidMount () {} 
   render() {
     let bookItems = this.state.bookList.map(book =>{
-      console.log(book)
       let {title,author,totalNum,images,_id} = book;
       return <AtListItem
         title={title}
@@ -29,15 +28,24 @@ export default class Index extends Component {
         extraText={`数量：${totalNum}`}
         thumb={images[0].url}
         key={_id}
+        onClick={this.naviToDetail.bind(this,_id)}
       />
     })
     return (
       <View>
-        <HeaderBanner></HeaderBanner>
+        <HeaderBanner onChange={this.onChange}></HeaderBanner>
         <AtList>
           {bookItems}
         </AtList>
       </View>
     );
+  }
+  onChange(params){
+    console.log(params)
+  }
+  naviToDetail(id){
+    Taro.navigateTo({
+      url: `/pages/detail/index?id=${id}`,
+    })
   }
 }
